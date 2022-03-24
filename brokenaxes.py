@@ -304,6 +304,13 @@ class BrokenAxes:
     def subax_call(self, method, args, kwargs):
         """Apply method call to all internal axes. Called by CallCurator."""
         result = []
+        xlabel = None
+        ylabel = None
+        use_seaborn = ("seaborn" in kwargs and kwargs["seaborn"])
+        if use_seaborn:
+            import seaborn
+            del kwargs["seaborn"]
+
         for ax in self.axs:
             if ax.xaxis.get_scale() == "log":
                 ax.xaxis.set_major_locator(ticker.LogLocator())
@@ -313,10 +320,23 @@ class BrokenAxes:
                 ax.yaxis.set_major_locator(ticker.LogLocator())
             else:
                 ax.yaxis.set_major_locator(ticker.AutoLocator())
-            result.append(getattr(ax, method)(*args, **kwargs))
+            if use_seaborn:
+                kwargs["ax"] = ax
+                p = getattr(seaborn, method)(*args, **kwargs)
+                xlabel = p.get_xlabel()
+                ylabel = p.get_ylabel()
+                p.set(xlabel=None)
+                p.set(ylabel=None)
+                result.append(p)
+            else:
+                result.append(getattr(ax, method)(*args, **kwargs))
 
         self.standardize_ticks()
         self.set_spines()
+
+        if use_seaborn:
+            self.set_xlabel(xlabel)
+            self.set_ylabel(ylabel)
 
         return result
 

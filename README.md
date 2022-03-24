@@ -1,4 +1,4 @@
-# brokenaxes
+# brokenaxes (Fork with seaborn support)
 
 ![brokenaxes logo. Reference: http://www.brianhensley.net/2012/02/python-controlling-spi-bus-on.html](https://raw.githubusercontent.com/bendichter/brokenaxes/master/broken_python_snake.png)
 
